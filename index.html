@@ -14,13 +14,13 @@
     <!-- load Bootstrap -->
     <link
       rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+      integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
       crossorigin="anonymous"
     />
     <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
-      integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
       crossorigin="anonymous"
     ></script>
     <!-- load local files -->
@@ -28,21 +28,314 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <header>Pok&eacute;mon BioDex</header>
+    <header>
+      <h1>Pok&eacute;mon BioDex</h1>
+    </header>
     <main>
       <div class="search-fields">
-        <div class="search-shape">
-          <label for="shape">Search by body shape:</label>
-          <select name="body-shape" id="shape"></select>
+        <!-- Bootstrap dropdown for regional search -->
+        <div class="dropdown" id="search-region">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="dropdownMenu2"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Select a region
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <button class="dropdown-item" type="button" data-gen="1">
+              Kanto
+            </button>
+            <button class="dropdown-item" type="button" data-gen="2">
+              Johto
+            </button>
+            <button class="dropdown-item" type="button" data-gen="3">
+              Hoenn
+            </button>
+            <button class="dropdown-item" type="button" data-gen="4">
+              Sinnoh
+            </button>
+            <button class="dropdown-item" type="button" data-gen="5">
+              Unova
+            </button>
+            <button class="dropdown-item" type="button" data-gen="6">
+              Kalos
+            </button>
+            <button class="dropdown-item" type="button" data-gen="7">
+              Alola
+            </button>
+            <button class="dropdown-item" type="button" data-gen="8">
+              Galar
+            </button>
+          </div>
         </div>
-        <div class="search-type">
-          <label for="type">Search by Pok&eacute;mon type:</label>
-          <select name="pokemon-type" id="type"></select>
+        <!-- Bootstrap dropdown for search criterion selection -->
+        <div class="dropdown" id="select-search">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="dropdownMenu2"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Select a criterion
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <button class="dropdown-item" type="button" data-search="shape">
+              Pok&eacute;mon shape
+            </button>
+            <button class="dropdown-item" type="button" data-search="eggGroup">
+              Egg group
+            </button>
+            <button class="dropdown-item" type="button" data-search="type">
+              Type
+            </button>
+          </div>
         </div>
-        <div class="search-text">
-          <label for="text">Search by species or flavor keywords:</label>
-          <input type="text" id="text" name="name-flavor-text" minlength="3" />
-          <button class="submit-text">Search</button>
+        <!-- Hidden dropdowns for searching  -->
+        <div class="criterion-searches">
+          <!-- Bootstrap dropdown for body shape search -->
+          <div class="dropdown" id="search-shape">
+            <button
+              class="btn btn-secondary dropdown-toggle"
+              type="button"
+              id="dropdownMenu2"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Select a shape
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+              <button class="dropdown-item" type="button" data-shape="wings">
+                Alar (characterized by two wings)
+              </button>
+              <button class="dropdown-item" type="button" data-shape="blob">
+                Alvine (indescribable)
+              </button>
+              <button class="dropdown-item" type="button" data-shape="humanoid">
+                Anthropomorphic (human-like)
+              </button>
+              <button class="dropdown-item" type="button" data-shape="arms">
+                Brachial (characterized by arms)
+              </button>
+              <button class="dropdown-item" type="button" data-shape="squiggle">
+                Caudal (squiggly / snakelike)
+              </button>
+              <button class="dropdown-item" type="button" data-shape="armor">
+                Chitinous (plated / armored)
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-shape="tentacles"
+              >
+                Cilial (characterized by tentacles)
+              </button>
+              <button class="dropdown-item" type="button" data-shape="legs">
+                Crural (characterized by legs)
+              </button>
+              <button class="dropdown-item" type="button" data-shape="fish">
+                Ichthyic (fishlike / finned)
+              </button>
+              <button class="dropdown-item" type="button" data-shape="bugWings">
+                Lepidopterous (multi-winged)
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-shape="quadruped"
+              >
+                Mensal (quadrupedal)
+              </button>
+              <button class="dropdown-item" type="button" data-shape="heads">
+                Polycephalic (multi-headed)
+              </button>
+              <button class="dropdown-item" type="button" data-shape="ball">
+                Pomaceous (spherical / orblike)
+              </button>
+              <button class="dropdown-item" type="button" data-shape="upright">
+                Sciurine (bipedal)
+              </button>
+            </div>
+          </div>
+          <!-- Bootstrap dropdown for egg group search -->
+          <div class="dropdown" id="search-egg-group">
+            <button
+              class="btn btn-secondary dropdown-toggle"
+              type="button"
+              id="dropdownMenu2"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Select an egg group
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+              <button class="dropdown-item" type="button" data-eggGroup="bug">
+                Bug
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-eggGroup="dragon"
+              >
+                Dragon
+              </button>
+              <button class="dropdown-item" type="button" data-eggGroup="fairy">
+                Fairy
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-eggGroup="flying"
+              >
+                Flying
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-eggGroup="ground"
+              >
+                Ground
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-eggGroup="humanshape"
+              >
+                Humanshape
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-eggGroup="indeterminate"
+              >
+                Indeterminate
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-eggGroup="mineral"
+              >
+                Mineral
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-eggGroup="monster"
+              >
+                Monster
+              </button>
+              <button class="dropdown-item" type="button" data-eggGroup="plant">
+                Plant
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-eggGroup="water1"
+              >
+                Water, type 1
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-eggGroup="water2"
+              >
+                Water, type 2
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-eggGroup="water3"
+              >
+                Water, type 3
+              </button>
+              <button class="dropdown-item" type="button" data-eggGroup="ditto">
+                Ditto
+              </button>
+              <button
+                class="dropdown-item"
+                type="button"
+                data-eggGroup="noEggs"
+              >
+                Cannot breed
+              </button>
+            </div>
+          </div>
+          <!-- Bootstrap dropdown for egg group search -->
+          <div class="dropdown" id="search-type">
+            <button
+              class="btn btn-secondary dropdown-toggle"
+              type="button"
+              id="dropdownMenu2"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Select a type
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+              <button class="dropdown-item" type="button" data-type="bug">
+                Bug
+              </button>
+              <button class="dropdown-item" type="button" data-type="dark">
+                Dark
+              </button>
+              <button class="dropdown-item" type="button" data-type="dragon">
+                Dragon
+              </button>
+              <button class="dropdown-item" type="button" data-type="electric">
+                Electric
+              </button>
+              <button class="dropdown-item" type="button" data-type="fairy">
+                Fairy
+              </button>
+              <button class="dropdown-item" type="button" data-type="fighting">
+                Fighting
+              </button>
+              <button class="dropdown-item" type="button" data-type="fire">
+                Fire
+              </button>
+              <button class="dropdown-item" type="button" data-type="flying">
+                Flying
+              </button>
+              <button class="dropdown-item" type="button" data-type="ghost">
+                Ghost
+              </button>
+              <button class="dropdown-item" type="button" data-type="grass">
+                Grass
+              </button>
+              <button class="dropdown-item" type="button" data-type="ground">
+                Ground
+              </button>
+              <button class="dropdown-item" type="button" data-type="ice">
+                Ice
+              </button>
+              <button class="dropdown-item" type="button" data-type="normal">
+                Normal
+              </button>
+              <button class="dropdown-item" type="button" data-type="poison">
+                Poison
+              </button>
+              <button class="dropdown-item" type="button" data-type="psychic">
+                Psychic
+              </button>
+              <button class="dropdown-item" type="button" data-type="rock">
+                Rock
+              </button>
+              <button class="dropdown-item" type="button" data-type="steel">
+                Steel
+              </button>
+              <button class="dropdown-item" type="button" data-type="water">
+                Water
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="results">
