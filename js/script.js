@@ -67,12 +67,16 @@ const TYPES = {
 
 // ---------- state variables -------------------------------------------------
 
-let results;
+let results, selectedSearch, 
 
 // ---------- cached element references ---------------------------------------
 
 const $results = $(".results");
 const $searchRegion = $("#search-region");
+const $selectSearch = $("#select-search");
+const $searchShape = $("#search-region");
+const $searchEggGroup = $("#search-egg-group");
+const $searchType = $("#search-type");
 
 // ---------- event listeners -------------------------------------------------
 
@@ -85,6 +89,8 @@ $searchRegion.on("click", ".dropdown-item", function() {
 $(".search-shape").click(function() {$(this).hide();});
 
 // ---------- functions -------------------------------------------------------
+
+
 
 /* Tasks
 1. implement searches by region
