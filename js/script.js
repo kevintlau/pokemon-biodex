@@ -1,7 +1,10 @@
 // ---------- constant variables ----------------------------------------------
 
-const BASE_URL = "https://pokeapi.co/api/v2/pokemon-species/";
-const REGIONS = {
+const SHAPE_URL = "https://pokeapi.co/api/v2/pokemon-shape/";
+const EGG_GROUP_URL = "https://pokeapi.co/api/v2/egg-group/";
+const TYPE_URL = "https://pokeapi.co/api/v2/type/";
+const DESC_URL = "https://pokeapi.co/api/v2/pokemon-species/";
+const REGION_SPECIES_LIMITS = {
   kanto: [1, 151],
   johto: [152, 251],
   hoenn: [252, 386],
@@ -67,30 +70,98 @@ const TYPES = {
 
 // ---------- state variables -------------------------------------------------
 
-let results, selectedSearch, 
+let results,
+  selectedRegion,
+  selectedSearch,
+  selectedShape,
+  selectedEggGroup,
+  selectedType;
 
 // ---------- cached element references ---------------------------------------
 
-const $results = $(".results");
+const $results = $("div.results");
 const $searchRegion = $("#search-region");
 const $selectSearch = $("#select-search");
-const $searchShape = $("#search-region");
+const $searchShape = $("#search-shape");
 const $searchEggGroup = $("#search-egg-group");
 const $searchType = $("#search-type");
 
 // ---------- event listeners -------------------------------------------------
 
-$searchRegion.on("click", ".dropdown-item", function() {
-  let generation = parseInt(this.dataset.gen);
-  console.log(`Region: ${generation} ${typeof generation}; range: ${REGION_SPECIES_LIMITS[generation]}`);
-  // console.log(REGION_SPECIES_LIMITS.kanto);
+$searchRegion.on("click", ".dropdown-item", function () {
+  selectedRegion = this.dataset.region;
 });
 
-$(".search-shape").click(function() {$(this).hide();});
+$searchShape.on("click", "button.dropdown-item", handleSearchShape);
 
 // ---------- functions -------------------------------------------------------
 
+// init();
 
+// function init() {
+
+// }
+
+function handleSearchShape() {
+  const selectedShape = this.dataset.shape;
+  const shapeId = SHAPES[selectedShape];
+  displayResults(SHAPE_URL, shapeId);
+
+}
+
+function displayResults(searchUrl, searchCode) {
+  $.ajax(searchUrl + searchCode).then(
+    function(data) {
+      results = refineResults(data.pokemon_species)
+      render(results);
+    },
+    function(error) {
+      console.log(error)
+    }
+  );
+}
+
+function getPokeId(pokemon) {
+  let splitUrl = pokemon.url.split("/");
+  return parseInt(splitUrl.slice(-2, -1));
+}
+
+function getPokeName(pokemon) {
+  let lowercaseName = pokemon.name;
+  return lowercaseName[0].toUpperCase() + lowercaseName.slice(1);
+}
+
+function inRegion(num) {
+  let min = REGION_SPECIES_LIMITS[selectedRegion][0];
+  let max = REGION_SPECIES_LIMITS[selectedRegion][1];
+  return min <= num && num <= max;
+}
+
+function refineResults(results) {
+  let refinedResults = results.filter(function(pokemon) {
+    let pokemonId = getPokeId(pokemon)
+    return inRegion(pokemonId);
+  });
+  console.log(refinedResults);
+  return refinedResults;
+}
+
+function render(results) {
+  const html = results.map(function(pokemon) {
+    pokeId = getPokeId(pokemon);
+    pokeName = getPokeName(pokemon);
+    return `
+      <article class="card">
+      <p class="pk-number">${pokeId}</p>
+      <p class="pk-name">${pokeName}</p>
+      <img class="pk-image" 
+        src="https://bulbapedia.bulbagarden.net/wiki/File:"${pokeId}${pokeName}.png" 
+        alt="#" />
+      </article>
+      `;
+  });
+  $results.append(html);
+}
 
 /* Tasks
 1. implement searches by region
