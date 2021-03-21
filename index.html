@@ -104,8 +104,40 @@
       </div>
 
       <div id="results"></div>
+
+      <!-- Pokemon info modal -->
+      <div
+        class="modal fade"
+        id="infoModal"
+        tabindex="-1"
+        aria-labelledby="pokemonInfoModal"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="infoModalTitle"></h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="modal-body-header">
+                <div class="modal-body-header-text"></div>
+                <div class="modal-body-header-image-container"></div>
+              </div>
+              <div class="modal-body-text"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
-    <footer>All Rights Reserved, Copyright &copy; 2021, PBD</footer>
+    <footer>All Rights Reserved, &copy; 2021, PBD</footer>
   </body>
 </html>

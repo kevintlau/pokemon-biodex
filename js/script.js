@@ -6,9 +6,10 @@ const TYPE_URL = "https://pokeapi.co/api/v2/type/";
 const DESC_URL = "https://pokeapi.co/api/v2/pokemon-species/";
 
 // URL to get a small icon - to get icon, add lowercase name.png
-const ICON_URL = "https://img.pokemondb.net/sprites/bank/normal/"
+const ICON_URL_PREGALAR = "https://img.pokemondb.net/sprites/bank/normal/";
+const ICON_URL_GALAR = "https://img.pokemondb.net/sprites/sword-shield/normal/";
 // URL to get a large portrait - to get portrait, add lowercase name.jpg
-const PORTRAIT_URL = "https://img.pokemondb.net/artwork/large/"
+const PORTRAIT_URL = "https://img.pokemondb.net/artwork/large/";
 
 const REGION_SPECIES_LIMITS = {
   kanto: [1, 151],
@@ -87,7 +88,7 @@ let results,
 
 // ---------- cached element references ---------------------------------------
 
-const $resultsEl = $("div#results");
+
 const $searchRegionEl = $("#search-region");
 const $selectSearchEl = $("#select-search");
 const $searchShapeEl = $("#search-shape");
@@ -95,6 +96,12 @@ const $searchEggGroupEl = $("#search-egg-group");
 const $searchTypeEl = $("#search-type");
 const $hideableEl = $(".hideable");
 const $criterionSearchesEl = $("#criterion-searches");
+const $resultsEl = $("div#results");
+const $modalEl = $("#infoModal");
+const $modalTitle = $("#infoModalTitle");
+const $modalBodyHeaderText = $(".modal-body-header-text");
+const $modalBodyHeaderImgCtnr = $(".modal-body-header-image-container");
+const $modalBodyText = $(".modal-body-text");
 
 // ---------- event listeners -------------------------------------------------
 
@@ -129,6 +136,12 @@ $criterionSearchesEl.on("click", "button.dropdown-item", function () {
   searchCriterion = this.dataset.criterion;
   searchValue = this.dataset.value;
   handleSearch();
+});
+
+$resultsEl.on("click", "article.pokemon", function() {
+  let pokemonId = this.dataset.id;
+  let pokemonName = this.dataset.name;
+  renderModal(pokemonId, pokemonName);
 });
 
 // ---------- functions -------------------------------------------------------
@@ -629,7 +642,7 @@ function displayResults(searchUrl, searchValue, searchCriterion) {
 function refineResults(results) {
   let refinedResults = results.filter(function (pokemon) {
     let pokemonId = getPokeId(pokemon);
-    return inRegion(pokemonId);
+    return inRegion(pokemonId, selectedRegion);
   });
   return refinedResults;
 }
@@ -639,31 +652,43 @@ function getPokeId(pokemon) {
   return parseInt(splitUrl.slice(-2, -1));
 }
 
-function getPokeName(pokemon) {
-  let lowercaseName = pokemon.name;
+function capitalize(lowercaseName) {
   return lowercaseName[0].toUpperCase() + lowercaseName.slice(1);
 }
 
-function inRegion(num) {
-  let min = REGION_SPECIES_LIMITS[selectedRegion][0];
-  let max = REGION_SPECIES_LIMITS[selectedRegion][1];
-  return min <= num && num <= max;
+function inRegion(id, region) {
+  let min = REGION_SPECIES_LIMITS[region][0];
+  let max = REGION_SPECIES_LIMITS[region][1];
+  return min <= id && id <= max;
+}
+
+function getIconUrl(id, name) {
+  if (inRegion(id, "galar")) {
+    return `${ICON_URL_GALAR}${name}.png`;
+  } else {
+    return `${ICON_URL_PREGALAR}${name}.png`;
+  }
 }
 
 function render(results) {
   $resultsEl.empty();
   const html = results.map(function (pokemon) {
-    pokeId = getPokeId(pokemon);
-    pokeName = getPokeName(pokemon);
-    // add switch case for when pokeid is in gen8 so we can get an icon
+    let pokemonId = getPokeId(pokemon);
+    let pokemonName = pokemon.name;
+    let imageUrl = getIconUrl(pokemonId, pokemonName);
+    let uppercaseName = capitalize(pokemonName);
     return `
-      <article class="pokemon card text-center">
+      <article 
+        class="pokemon card text-center" 
+        data-id="${pokemonId}"
+        data-name="${uppercaseName}"
+      >
         <div class="img-container">
-          <img src="${ICON_URL}${pokemon.name}.png"
-            class="card-img-top pk-img" alt="${pokeName}">
+          <img src="${imageUrl}"
+            class="card-img-top pk-img" alt="${uppercaseName}">
         </div>
         <div class="card-body">
-          <h5 class="card-title">#${pokeId}: ${pokeName}</h5>
+          <h5 class="card-title">#${pokemonId}: ${uppercaseName}</h5>
         </div>
       </article>
       `;
@@ -672,4 +697,10 @@ function render(results) {
   if (!html.length) {
     $resultsEl.append("<p class='no-results'>No results found.</p>");
   }
+}
+
+function renderModal(id, name) {
+  $modalEl.modal("toggle");
+  $("#infoModalTitle").text(id);
+  $(".modal-body").text(name);
 }
