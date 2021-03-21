@@ -1,44 +1,79 @@
-* {
-    margin: 0;
-}
-
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
-header, footer {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    justify-content: center;
-    height: 4rem;
+header,
+footer {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  height: 4rem;
+  width: 100%;
 }
 
 header {
-    width: 22rem;
-    background: salmon;
+  background-color: salmon;
+  font-size: 2.5rem;
 }
 
-.search-fields, .criterion-searches {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+main {
+  flex-grow: 1;
+}
+
+footer {
+  background-color: lightblue;
+}
+
+.search-fields,
+.criterion-searches {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .search-fields {
-    margin-top: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .dropdown {
-    margin-top: 0.7rem;
+  margin-top: 0.7rem;
 }
 
-#select-search, #search-shape, 
-#search-egg-group, #search-type {
-    display: none;
+#select-search,
+#search-shape,
+#search-egg-group,
+#search-type {
+  display: none;
+}
+
+#results {
+  display: flex;
+  margin: 1rem auto 1rem auto;
+  width: 950px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+article.pokemon {
+  width: 16rem;
+  height: 13rem;
+  padding: 2rem 1rem 2rem 1rem;
+  margin: 1rem;
+  border: 2px solid #000;
+}
+
+.img-container {
+  height: 100px;
+}
+
+.pk-img {
+    max-height: 100%;
+    width: auto;
 }

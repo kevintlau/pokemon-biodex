@@ -74,11 +74,11 @@ const TYPES = {
 
 // ---------- state variables -------------------------------------------------
 
-let results, selectedRegion, selectedSearch;
+let results, selectedRegion, selectedSearch, searchCriterion, searchValue;
 
 // ---------- cached element references ---------------------------------------
 
-const $results = $("div.results");
+const $results = $("div#results");
 const $searchRegion = $("#search-region");
 const $selectSearch = $("#select-search");
 const $searchShape = $("#search-shape");
@@ -89,11 +89,19 @@ const $criterionSearches = $("#criterion-searches");
 // ---------- event listeners -------------------------------------------------
 
 $searchRegion.on("click", ".dropdown-item", function () {
+  $searchRegion.children().eq(1).children().removeClass("active");
+  $(this).addClass("active");
   selectedRegion = this.dataset.region;
   $selectSearch.show();
+  if (selectedSearch) {
+    console.log("searched again!");
+    handleSearch();
+  }
 });
 
 $selectSearch.on("click", ".dropdown-item", function () {
+  $selectSearch.children().eq(1).children().removeClass("active");
+  $(this).addClass("active");
   selectedSearch = this.dataset.search;
   switch (selectedSearch) {
     case "shape":
@@ -125,8 +133,8 @@ function init() {
 }
 
 function handleSearch() {
-  const searchCriterion = this.dataset.criterion;
-  const searchValue = this.dataset.value;
+  searchCriterion = this.dataset.criterion;
+  searchValue = this.dataset.value;
   if (searchCriterion === "shape") {
     displayResults(SHAPE_URL, searchValue, searchCriterion);
   } else if (searchCriterion === "egggroup") {
@@ -141,16 +149,17 @@ function handleSearch() {
 function displayResults(searchUrl, searchValue, searchCriterion) {
   $.ajax(searchUrl + searchValue).then(
     function (data) {
-      if (searchCriterion === "type") {
-        const typeSearchResults = data.pokemon;
-        jsonPokemon = typeSearchResults.map(function (result) {
-          return result.pokemon;
-        });
-      } else if (
-        searchCriterion === "shape" ||
-        searchCriterion === "egggroup"
-      ) {
-        jsonPokemon = data.pokemon_species;
+      switch (searchCriterion) {
+        case "type":
+          const typeSearchResults = data.pokemon;
+          jsonPokemon = typeSearchResults.map(function (result) {
+            return result.pokemon;
+          });
+          break;
+        case "shape":
+        case "egggroup":
+          jsonPokemon = data.pokemon_species;
+          break;
       }
       results = refineResults(jsonPokemon);
       render(results);
@@ -191,10 +200,14 @@ function render(results) {
     pokeId = getPokeId(pokemon);
     pokeName = getPokeName(pokemon);
     return `
-      <article class="pokemon card">
-      <img src="https://img.pokemondb.net/artwork/large/${pokemon.name}.jpg" 
-        class="card-img-top" alt="${pokeName}">
-      <h5 class="card-title">${pokeId} ${pokeName}</p>
+      <article class="pokemon card text-center">
+        <div class="img-container">
+          <img src="https://img.pokemondb.net/artwork/large/${pokemon.name}.jpg"
+            class="card-img-top pk-img" alt="${pokeName}">
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">#${pokeId}: ${pokeName}</p>
+        </div>
       </article>
       `;
   });
