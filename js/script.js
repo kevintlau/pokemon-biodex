@@ -5,6 +5,11 @@ const EGG_GROUP_URL = "https://pokeapi.co/api/v2/egg-group/";
 const TYPE_URL = "https://pokeapi.co/api/v2/type/";
 const DESC_URL = "https://pokeapi.co/api/v2/pokemon-species/";
 
+// URL to get a small icon - to get icon, add lowercase name.png
+const ICON_URL = "https://img.pokemondb.net/sprites/bank/normal/"
+// URL to get a large portrait - to get portrait, add lowercase name.jpg
+const PORTRAIT_URL = "https://img.pokemondb.net/artwork/large/"
+
 const REGION_SPECIES_LIMITS = {
   kanto: [1, 151],
   johto: [152, 251],
@@ -650,14 +655,15 @@ function render(results) {
   const html = results.map(function (pokemon) {
     pokeId = getPokeId(pokemon);
     pokeName = getPokeName(pokemon);
+    // add switch case for when pokeid is in gen8 so we can get an icon
     return `
       <article class="pokemon card text-center">
         <div class="img-container">
-          <img src="https://img.pokemondb.net/artwork/large/${pokemon.name}.jpg"
+          <img src="${ICON_URL}${pokemon.name}.png"
             class="card-img-top pk-img" alt="${pokeName}">
         </div>
         <div class="card-body">
-          <h5 class="card-title">#${pokeId}: ${pokeName}</p>
+          <h5 class="card-title">#${pokeId}: ${pokeName}</h5>
         </div>
       </article>
       `;
