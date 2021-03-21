@@ -84,6 +84,7 @@ const $searchRegion = $("#search-region");
 const $selectSearch = $("#select-search");
 const $searchShape = $("#search-shape");
 const $searchEggGroup = $("#search-egg-group");
+const $criterionSearches = $(".criterion-searches");
 const $searchType = $("#search-type");
 
 // ---------- event listeners -------------------------------------------------
@@ -92,33 +93,59 @@ $searchRegion.on("click", ".dropdown-item", function () {
   selectedRegion = this.dataset.region;
 });
 
-$searchShape.on("click", "button.dropdown-item", handleSearchShape);
+$criterionSearches.on("click", "button.dropdown-item", handleSearch);
 
 // ---------- functions -------------------------------------------------------
 
-// init();
+init();
 
-// function init() {
-
-// }
-
-function handleSearchShape() {
-  const selectedShape = this.dataset.shape;
-  const shapeId = SHAPES[selectedShape];
-  displayResults(SHAPE_URL, shapeId);
-
+function init() {
+  $results.empty();
 }
 
-function displayResults(searchUrl, searchCode) {
-  $.ajax(searchUrl + searchCode).then(
-    function(data) {
-      results = refineResults(data.pokemon_species)
+function handleSearch() {
+  const searchCriterion = this.dataset.criterion;
+  const searchValue = this.dataset.value;
+  if (searchCriterion === "shape") {
+    displayResults(SHAPE_URL, searchValue, searchCriterion);
+  } else if (searchCriterion === "egggroup") {
+    displayResults(EGG_GROUP_URL, searchValue, searchCriterion);
+  } else if (searchCriterion === "type") {
+    displayResults(TYPE_URL, searchValue, searchCriterion);
+  } else {
+    console.log("Search criterion could not be read.");
+  }
+}
+
+function displayResults(searchUrl, searchValue, searchCriterion) {
+  $.ajax(searchUrl + searchValue).then(
+    function (data) {
+      if (searchCriterion === "type") {
+        const typeSearchResults = data.pokemon;
+        jsonPokemon = typeSearchResults.map(function (result) {
+          return result.pokemon;
+        });
+      } else if (
+        searchCriterion === "shape" ||
+        searchCriterion === "egggroup"
+      ) {
+        jsonPokemon = data.pokemon_species;
+      }
+      results = refineResults(jsonPokemon);
       render(results);
     },
-    function(error) {
-      console.log(error)
+    function (error) {
+      console.log(error);
     }
   );
+}
+
+function refineResults(results) {
+  let refinedResults = results.filter(function (pokemon) {
+    let pokemonId = getPokeId(pokemon);
+    return inRegion(pokemonId);
+  });
+  return refinedResults;
 }
 
 function getPokeId(pokemon) {
@@ -137,44 +164,21 @@ function inRegion(num) {
   return min <= num && num <= max;
 }
 
-function refineResults(results) {
-  let refinedResults = results.filter(function(pokemon) {
-    let pokemonId = getPokeId(pokemon)
-    return inRegion(pokemonId);
-  });
-  console.log(refinedResults);
-  return refinedResults;
-}
-
 function render(results) {
-  const html = results.map(function(pokemon) {
+  $results.empty();
+  const html = results.map(function (pokemon) {
     pokeId = getPokeId(pokemon);
     pokeName = getPokeName(pokemon);
     return `
-      <article class="card">
-      <p class="pk-number">${pokeId}</p>
-      <p class="pk-name">${pokeName}</p>
-      <img class="pk-image" 
-        src="https://bulbapedia.bulbagarden.net/wiki/File:"${pokeId}${pokeName}.png" 
-        alt="#" />
+      <article class="pokemon card">
+      <img src="https://img.pokemondb.net/artwork/large/${pokemon.name}.jpg" 
+        class="card-img-top" alt="${pokeName}">
+      <h5 class="card-title">${pokeId} ${pokeName}</p>
       </article>
       `;
   });
   $results.append(html);
+  if (!html.length) {
+    $results.append("<p class='no-results'>No results found.</p>");
+  }
 }
-
-/* Tasks
-1. implement searches by region
-2. implement searches by shape, egg group, type
-3. search one criterion at a time
-    a. hide the other dropdowns unless the user chooses that criterion
-4. make a modal card with the following
-    a. number
-    b. name
-    c. type
-    d. genus
-    e. height
-    f. weight
-    g. dex entries from main series games
-    h. picture
-*/

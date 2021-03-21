@@ -27,10 +27,12 @@
     <script defer src="js/script.js"></script>
     <link rel="stylesheet" href="css/style.css" />
   </head>
+
   <body>
     <header>
       <h1>Pok&eacute;mon BioDex</h1>
     </header>
+
     <main>
       <div class="search-fields">
         <!-- Bootstrap dropdown for regional search -->
@@ -72,6 +74,7 @@
             </button>
           </div>
         </div>
+
         <!-- Bootstrap dropdown for search criterion selection -->
         <div class="dropdown" id="select-search">
           <button
@@ -96,6 +99,7 @@
             </button>
           </div>
         </div>
+
         <!-- Hidden dropdowns for searching  -->
         <div class="criterion-searches">
           <!-- Bootstrap dropdown for body shape search -->
@@ -111,58 +115,121 @@
               Select a shape
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-              <button class="dropdown-item" type="button" data-shape="wings">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="wings"
+              >
                 Alar (characterized by two wings)
               </button>
-              <button class="dropdown-item" type="button" data-shape="blob">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="blob"
+              >
                 Alvine (indescribable)
               </button>
-              <button class="dropdown-item" type="button" data-shape="humanoid">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="humanoid"
+              >
                 Anthropomorphic (human-like)
               </button>
-              <button class="dropdown-item" type="button" data-shape="arms">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="arms"
+              >
                 Brachial (characterized by arms)
               </button>
-              <button class="dropdown-item" type="button" data-shape="squiggle">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="squiggle"
+              >
                 Caudal (squiggly / snakelike)
               </button>
-              <button class="dropdown-item" type="button" data-shape="armor">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="armor"
+              >
                 Chitinous (plated / armored)
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-shape="tentacles"
+                data-criterion="shape"
+                data-value="tentacles"
               >
                 Cilial (characterized by tentacles)
               </button>
-              <button class="dropdown-item" type="button" data-shape="legs">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="legs"
+              >
                 Crural (characterized by legs)
               </button>
-              <button class="dropdown-item" type="button" data-shape="fish">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="fish"
+              >
                 Ichthyic (fishlike / finned)
               </button>
-              <button class="dropdown-item" type="button" data-shape="bugWings">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="bug-wings"
+              >
                 Lepidopterous (multi-winged)
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-shape="quadruped"
+                data-criterion="shape"
+                data-value="quadruped"
               >
                 Mensal (quadrupedal)
               </button>
-              <button class="dropdown-item" type="button" data-shape="heads">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="heads"
+              >
                 Polycephalic (multi-headed)
               </button>
-              <button class="dropdown-item" type="button" data-shape="ball">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="ball"
+              >
                 Pomaceous (spherical / orblike)
               </button>
-              <button class="dropdown-item" type="button" data-shape="upright">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="shape"
+                data-value="upright"
+              >
                 Sciurine (bipedal)
               </button>
             </div>
           </div>
+
           <!-- Bootstrap dropdown for egg group search -->
           <div class="dropdown" id="search-egg-group">
             <button
@@ -176,97 +243,129 @@
               Select an egg group
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-              <button class="dropdown-item" type="button" data-eggGroup="bug">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="egggroup"
+                data-value="bug"
+              >
                 Bug
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-eggGroup="dragon"
+                data-criterion="egggroup"
+                data-value="dragon"
               >
                 Dragon
               </button>
-              <button class="dropdown-item" type="button" data-eggGroup="fairy">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="egggroup"
+                data-value="fairy"
+              >
                 Fairy
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-eggGroup="flying"
+                data-criterion="egggroup"
+                data-value="flying"
               >
                 Flying
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-eggGroup="ground"
+                data-criterion="egggroup"
+                data-value="ground"
               >
                 Ground
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-eggGroup="humanshape"
+                data-criterion="egggroup"
+                data-value="humanshape"
               >
                 Humanshape
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-eggGroup="indeterminate"
+                data-criterion="egggroup"
+                data-value="indeterminate"
               >
                 Indeterminate
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-eggGroup="mineral"
+                data-criterion="egggroup"
+                data-value="mineral"
               >
                 Mineral
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-eggGroup="monster"
+                data-criterion="egggroup"
+                data-value="monster"
               >
                 Monster
               </button>
-              <button class="dropdown-item" type="button" data-eggGroup="plant">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="egggroup"
+                data-value="plant"
+              >
                 Plant
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-eggGroup="water1"
+                data-criterion="egggroup"
+                data-value="water1"
               >
                 Water, type 1
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-eggGroup="water2"
+                data-criterion="egggroup"
+                data-value="water2"
               >
                 Water, type 2
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-eggGroup="water3"
+                data-criterion="egggroup"
+                data-value="water3"
               >
                 Water, type 3
               </button>
-              <button class="dropdown-item" type="button" data-eggGroup="ditto">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="egggroup"
+                data-value="ditto"
+              >
                 Ditto
               </button>
               <button
                 class="dropdown-item"
                 type="button"
-                data-eggGroup="noEggs"
+                data-criterion="egggroup"
+                data-value="no-eggs"
               >
                 Cannot breed
               </button>
             </div>
           </div>
+
           <!-- Bootstrap dropdown for egg group search -->
           <div class="dropdown" id="search-type">
             <button
@@ -280,67 +379,158 @@
               Select a type
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-              <button class="dropdown-item" type="button" data-type="bug">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="bug"
+              >
                 Bug
               </button>
-              <button class="dropdown-item" type="button" data-type="dark">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="dark"
+              >
                 Dark
               </button>
-              <button class="dropdown-item" type="button" data-type="dragon">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="dragon"
+              >
                 Dragon
               </button>
-              <button class="dropdown-item" type="button" data-type="electric">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="electric"
+              >
                 Electric
               </button>
-              <button class="dropdown-item" type="button" data-type="fairy">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="fairy"
+              >
                 Fairy
               </button>
-              <button class="dropdown-item" type="button" data-type="fighting">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="fighting"
+              >
                 Fighting
               </button>
-              <button class="dropdown-item" type="button" data-type="fire">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="fire"
+              >
                 Fire
               </button>
-              <button class="dropdown-item" type="button" data-type="flying">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="flying"
+              >
                 Flying
               </button>
-              <button class="dropdown-item" type="button" data-type="ghost">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="ghost"
+              >
                 Ghost
               </button>
-              <button class="dropdown-item" type="button" data-type="grass">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="grass"
+              >
                 Grass
               </button>
-              <button class="dropdown-item" type="button" data-type="ground">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="ground"
+              >
                 Ground
               </button>
-              <button class="dropdown-item" type="button" data-type="ice">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="ice"
+              >
                 Ice
               </button>
-              <button class="dropdown-item" type="button" data-type="normal">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="normal"
+              >
                 Normal
               </button>
-              <button class="dropdown-item" type="button" data-type="poison">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="poison"
+              >
                 Poison
               </button>
-              <button class="dropdown-item" type="button" data-type="psychic">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="psychic"
+              >
                 Psychic
               </button>
-              <button class="dropdown-item" type="button" data-type="rock">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="rock"
+              >
                 Rock
               </button>
-              <button class="dropdown-item" type="button" data-type="steel">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="steel"
+              >
                 Steel
               </button>
-              <button class="dropdown-item" type="button" data-type="water">
+              <button
+                class="dropdown-item"
+                type="button"
+                data-criterion="type"
+                data-value="water"
+              >
                 Water
               </button>
             </div>
           </div>
         </div>
       </div>
-      <div class="results">
-      </div>
+
+      <div class="results"></div>
     </main>
+
     <footer>All Rights Reserved, Copyright &copy; 2021, PBD</footer>
   </body>
 </html>
