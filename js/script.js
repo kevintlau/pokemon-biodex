@@ -122,7 +122,11 @@ $selectSearch.on("click", ".dropdown-item", function () {
   }
 });
 
-$criterionSearches.on("click", "button.dropdown-item", handleSearch);
+$criterionSearches.on("click", "button.dropdown-item", function () {
+  searchCriterion = this.dataset.criterion;
+  searchValue = this.dataset.value;
+  handleSearch();
+});
 
 // ---------- functions -------------------------------------------------------
 
@@ -133,8 +137,6 @@ function init() {
 }
 
 function handleSearch() {
-  searchCriterion = this.dataset.criterion;
-  searchValue = this.dataset.value;
   if (searchCriterion === "shape") {
     displayResults(SHAPE_URL, searchValue, searchCriterion);
   } else if (searchCriterion === "egggroup") {
