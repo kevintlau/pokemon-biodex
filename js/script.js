@@ -82,49 +82,44 @@ let results,
 
 // ---------- cached element references ---------------------------------------
 
-const $results = $("div#results");
-const $searchRegion = $("#search-region");
-const $selectSearch = $("#select-search");
-const $searchShape = $("#search-shape");
-const $searchEggGroup = $("#search-egg-group");
-const $searchType = $("#search-type");
-const $criterionSearches = $("#criterion-searches");
+const $resultsEl = $("div#results");
+const $searchRegionEl = $("#search-region");
+const $selectSearchEl = $("#select-search");
+const $searchShapeEl = $("#search-shape");
+const $searchEggGroupEl = $("#search-egg-group");
+const $searchTypeEl = $("#search-type");
+const $hideableEl = $(".hideable");
+const $criterionSearchesEl = $("#criterion-searches");
 
 // ---------- event listeners -------------------------------------------------
 
-$searchRegion.on("click", ".dropdown-item", function () {
+$searchRegionEl.on("click", ".dropdown-item", function () {
   activate($(this));
   selectedRegion = this.dataset.region;
-  $selectSearch.show();
+  $selectSearchEl.children().eq(0).removeAttr("disabled");
   if (selectedSearch) {
     handleSearch();
   }
 });
 
-$selectSearch.on("click", ".dropdown-item", function () {
+$selectSearchEl.on("click", ".dropdown-item", function () {
   activate($(this));
   selectedSearch = this.dataset.search;
-  
+  $criterionSearchesEl.empty();
   switch (selectedSearch) {
     case "shape":
-      $searchShape.show();
-      $searchEggGroup.hide();
-      $searchType.hide();
+      createShapeSearch();
       break;
     case "egggroup":
-      $searchShape.hide();
-      $searchEggGroup.show();
-      $searchType.hide();
+      createEggGroupSearch();
       break;
     case "type":
-      $searchShape.hide();
-      $searchEggGroup.hide();
-      $searchType.show();
+      createTypeSearch();
       break;
   }
 });
 
-$criterionSearches.on("click", "button.dropdown-item", function () {
+$criterionSearchesEl.on("click", "button.dropdown-item", function () {
   activate($(this));
   searchCriterion = this.dataset.criterion;
   searchValue = this.dataset.value;
@@ -136,15 +131,459 @@ $criterionSearches.on("click", "button.dropdown-item", function () {
 init();
 
 function init() {
-  $results.empty();
+  $resultsEl.empty();
+  $criterionSearchesEl.empty();
+}
+
+// Create Bootstrap dropdown for body shape search
+function createShapeSearch() {
+  $criterionSearchesEl.empty();
+  const shapeSearchHtml = `
+    <div class="dropdown" id="search-shape">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="dropdownMenu2"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Select a shape
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="wings"
+        >
+          Alar (characterized by two wings)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="blob"
+        >
+          Alvine (indescribable)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="humanoid"
+        >
+          Anthropomorphic (human-like)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="arms"
+        >
+          Brachial (characterized by arms)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="squiggle"
+        >
+          Caudal (squiggly / snakelike)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="armor"
+        >
+          Chitinous (plated / armored)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="tentacles"
+        >
+          Cilial (characterized by tentacles)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="legs"
+        >
+          Crural (characterized by legs)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="fish"
+        >
+          Ichthyic (fishlike / finned)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="bug-wings"
+        >
+          Lepidopterous (multi-winged)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="quadruped"
+        >
+          Mensal (quadrupedal)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="heads"
+        >
+          Polycephalic (multi-headed)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="ball"
+        >
+          Pomaceous (spherical / orblike)
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="shape"
+          data-value="upright"
+        >
+          Sciurine (bipedal)
+        </button>
+      </div>
+    </div>
+    `;
+  $criterionSearchesEl.append(shapeSearchHtml);
+}
+
+// Create Bootstrap dropdown for egg group search
+function createEggGroupSearch() {
+  $criterionSearchesEl.empty();
+  const eggGroupSearchHtml = `
+    <div class="dropdown" id="search-egg-group">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="dropdownMenu2"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Select an egg group
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="bug"
+        >
+          Bug
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="dragon"
+        >
+          Dragon
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="fairy"
+        >
+          Fairy
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="flying"
+        >
+          Flying
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="ground"
+        >
+          Ground
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="humanshape"
+        >
+          Humanshape
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="indeterminate"
+        >
+          Indeterminate
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="mineral"
+        >
+          Mineral
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="monster"
+        >
+          Monster
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="plant"
+        >
+          Plant
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="water1"
+        >
+          Water, type 1
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="water2"
+        >
+          Water, type 2
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="water3"
+        >
+          Water, type 3
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="ditto"
+        >
+          Ditto
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="egggroup"
+          data-value="no-eggs"
+        >
+          Cannot breed
+        </button>
+      </div>
+    </div>
+    `;
+  $criterionSearchesEl.append(eggGroupSearchHtml);
+}
+
+// Create Bootstrap dropdown for type search
+function createTypeSearch() {
+  $criterionSearchesEl.empty();
+  const typeSearchHtml = `
+    <div class="dropdown hideable" id="search-type">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="dropdownMenu2"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Select a type
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="bug"
+        >
+          Bug
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="dark"
+        >
+          Dark
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="dragon"
+        >
+          Dragon
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="electric"
+        >
+          Electric
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="fairy"
+        >
+          Fairy
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="fighting"
+        >
+          Fighting
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="fire"
+        >
+          Fire
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="flying"
+        >
+          Flying
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="ghost"
+        >
+          Ghost
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="grass"
+        >
+          Grass
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="ground"
+        >
+          Ground
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="ice"
+        >
+          Ice
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="normal"
+        >
+          Normal
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="poison"
+        >
+          Poison
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="psychic"
+        >
+          Psychic
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="rock"
+        >
+          Rock
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="steel"
+        >
+          Steel
+        </button>
+        <button
+          class="dropdown-item"
+          type="button"
+          data-criterion="type"
+          data-value="water"
+        >
+          Water
+        </button>
+      </div>
+    </div>
+    `;
+  $criterionSearchesEl.append(typeSearchHtml);
 }
 
 function activate(element) {
-  element.siblings().removeClass("active");
-  element.addClass("active");
+  element.siblings().removeClass("selected");
+  element.addClass("selected");
+  let parentButton = element.parent().siblings().eq(0);
+  parentButton.text(element.text());
+  parentButton.addClass("selected");
 }
-
-
 
 function handleSearch() {
   if (searchCriterion === "shape") {
@@ -207,7 +646,7 @@ function inRegion(num) {
 }
 
 function render(results) {
-  $results.empty();
+  $resultsEl.empty();
   const html = results.map(function (pokemon) {
     pokeId = getPokeId(pokemon);
     pokeName = getPokeName(pokemon);
@@ -223,8 +662,8 @@ function render(results) {
       </article>
       `;
   });
-  $results.append(html);
+  $resultsEl.append(html);
   if (!html.length) {
-    $results.append("<p class='no-results'>No results found.</p>");
+    $resultsEl.append("<p class='no-results'>No results found.</p>");
   }
 }
