@@ -74,7 +74,11 @@ const TYPES = {
 
 // ---------- state variables -------------------------------------------------
 
-let results, selectedRegion, selectedSearch, searchCriterion, searchValue;
+let results, 
+    selectedRegion, 
+    selectedSearch, 
+    searchCriterion, 
+    searchValue;
 
 // ---------- cached element references ---------------------------------------
 
@@ -89,20 +93,18 @@ const $criterionSearches = $("#criterion-searches");
 // ---------- event listeners -------------------------------------------------
 
 $searchRegion.on("click", ".dropdown-item", function () {
-  $searchRegion.children().eq(1).children().removeClass("active");
-  $(this).addClass("active");
+  activate($(this));
   selectedRegion = this.dataset.region;
   $selectSearch.show();
   if (selectedSearch) {
-    console.log("searched again!");
     handleSearch();
   }
 });
 
 $selectSearch.on("click", ".dropdown-item", function () {
-  $selectSearch.children().eq(1).children().removeClass("active");
-  $(this).addClass("active");
+  activate($(this));
   selectedSearch = this.dataset.search;
+  
   switch (selectedSearch) {
     case "shape":
       $searchShape.show();
@@ -123,6 +125,7 @@ $selectSearch.on("click", ".dropdown-item", function () {
 });
 
 $criterionSearches.on("click", "button.dropdown-item", function () {
+  activate($(this));
   searchCriterion = this.dataset.criterion;
   searchValue = this.dataset.value;
   handleSearch();
@@ -135,6 +138,13 @@ init();
 function init() {
   $results.empty();
 }
+
+function activate(element) {
+  element.siblings().removeClass("active");
+  element.addClass("active");
+}
+
+
 
 function handleSearch() {
   if (searchCriterion === "shape") {
