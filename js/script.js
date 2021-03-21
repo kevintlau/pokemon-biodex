@@ -4,6 +4,7 @@ const SHAPE_URL = "https://pokeapi.co/api/v2/pokemon-shape/";
 const EGG_GROUP_URL = "https://pokeapi.co/api/v2/egg-group/";
 const TYPE_URL = "https://pokeapi.co/api/v2/type/";
 const DESC_URL = "https://pokeapi.co/api/v2/pokemon-species/";
+
 const REGION_SPECIES_LIMITS = {
   kanto: [1, 151],
   johto: [152, 251],
@@ -14,6 +15,7 @@ const REGION_SPECIES_LIMITS = {
   alola: [722, 809],
   galar: [810, 898],
 };
+
 const SHAPES = {
   ball: 1,
   squiggle: 2,
@@ -30,6 +32,7 @@ const SHAPES = {
   bugWings: 13,
   armor: 14,
 };
+
 const EGG_GROUPS = {
   monster: 1,
   water1: 2,
@@ -47,6 +50,7 @@ const EGG_GROUPS = {
   dragon: 14,
   noEggs: 15,
 };
+
 const TYPES = {
   normal: 1,
   fighting: 2,
@@ -70,12 +74,7 @@ const TYPES = {
 
 // ---------- state variables -------------------------------------------------
 
-let results,
-  selectedRegion,
-  selectedSearch,
-  selectedShape,
-  selectedEggGroup,
-  selectedType;
+let results, selectedRegion, selectedSearch;
 
 // ---------- cached element references ---------------------------------------
 
@@ -84,13 +83,35 @@ const $searchRegion = $("#search-region");
 const $selectSearch = $("#select-search");
 const $searchShape = $("#search-shape");
 const $searchEggGroup = $("#search-egg-group");
-const $criterionSearches = $(".criterion-searches");
 const $searchType = $("#search-type");
+const $criterionSearches = $("#criterion-searches");
 
 // ---------- event listeners -------------------------------------------------
 
 $searchRegion.on("click", ".dropdown-item", function () {
   selectedRegion = this.dataset.region;
+  $selectSearch.show();
+});
+
+$selectSearch.on("click", ".dropdown-item", function () {
+  selectedSearch = this.dataset.search;
+  switch (selectedSearch) {
+    case "shape":
+      $searchShape.show();
+      $searchEggGroup.hide();
+      $searchType.hide();
+      break;
+    case "egggroup":
+      $searchShape.hide();
+      $searchEggGroup.show();
+      $searchType.hide();
+      break;
+    case "type":
+      $searchShape.hide();
+      $searchEggGroup.hide();
+      $searchType.show();
+      break;
+  }
 });
 
 $criterionSearches.on("click", "button.dropdown-item", handleSearch);

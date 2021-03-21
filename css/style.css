@@ -37,3 +37,8 @@ header {
 .dropdown {
     margin-top: 0.7rem;
 }
+
+#select-search, #search-shape, 
+#search-egg-group, #search-type {
+    display: none;
+}
