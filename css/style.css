@@ -66,19 +66,16 @@ footer {
 }
 
 article.pokemon {
-  width: 15rem;
+  width: 12.5rem;
   height: 12.5rem;
-  padding: 2rem 1rem 2rem 1rem;
+  padding: 1rem 1rem 1rem 1rem;
   margin: 1rem;
   border: 2px solid #000;
 }
 
-.card-body {
-    padding-top: 0;
-}
-
 .img-container {
-  height: 100px;
+  height: 110px;
+  padding-top: 10px;
 }
 
 .pk-icon {
@@ -89,4 +86,18 @@ article.pokemon {
 .modal-body {
   display: flex;
   flex-direction: column;
+}
+
+.modal-body-header {
+  display: flex;
+  flex-direction: row;
+
+}
+
+.pk-portrait {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  max-height: 150px;
+  width: auto;
 }

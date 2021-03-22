@@ -3,11 +3,7 @@
 const SHAPE_URL = "https://pokeapi.co/api/v2/pokemon-shape/";
 const EGG_GROUP_URL = "https://pokeapi.co/api/v2/egg-group/";
 const TYPE_URL = "https://pokeapi.co/api/v2/type/";
-const DESC_URL = "https://pokeapi.co/api/v2/pokemon-species/";
-
 const POKEMON_INFO_URL = "https://pokeapi.co/api/v2/pokemon-species/";
-// URL to get a large portrait - to get portrait, add lowercase name.jpg
-const PORTRAIT_URL = "https://img.pokemondb.net/artwork/large/";
 
 const REGION_SPECIES_LIMITS = {
   kanto: [1, 151],
@@ -687,7 +683,7 @@ function render(results) {
             class="card-img-top pk-icon" alt="${uppercaseName}">
         </div>
         <div class="card-body">
-          <h5 class="card-title">#${pokemonId}: ${uppercaseName}</h5>
+          <h5 class="card-title">${uppercaseName}</h5>
         </div>
       </article>
       `;
@@ -699,11 +695,13 @@ function render(results) {
 }
 
 function displayModal(id, name) {
+  $modalBodyHeaderText.empty();
+  $modalBodyHeaderImgCtnr.empty();
+  $modalBodyText.empty();
   $modalEl.modal("toggle");
   $.ajax(POKEMON_INFO_URL + id).then(
     function (data) {
       pokemonData.id = id;
-      pokemonData.name = name;
       getPokeData(data);
       renderModal(pokemonData);
     }
@@ -713,23 +711,43 @@ function displayModal(id, name) {
 }
 
 function getPokeData(pokemon) {
-  pokemonData.color = pokemon.color.name;
-  pokemonData.eggGroup = pokemon.egg_groups.map(function(group) {
-    return group.name;
+  let nameEng = pokemon.names.find(function(nameEntry) {
+    return nameEntry.language.name === "en";
   });
-  let genusEng = pokemon.genera.filter(function(genus) {
-    genus.language.name = "en";
+  pokemonData.name = nameEng.name;
+  pokemonData.color = pokemon.color.name;
+  pokemonData.eggGroup = pokemon.egg_groups.map(function(groupEntry) {
+    return groupEntry.name;
+  });
+  let genusEng = pokemon.genera.find(function(genusEntry) {
+    return genusEntry.language.name === "en";
   });
   pokemonData.genus = genusEng.genus;
   pokemonData.shape = pokemon.shape.name;
-  let flavorEng = pokemon.flavor_text_entries.filter(function(entry) {
-    entry.language.name = "en";
+  let flavorEng = pokemon.flavor_text_entries.filter(function(flavorEntry) {
+    return flavorEntry.language.name === "en";
   });
-  pokemonData.flavor = flavorEng.map(function(entry) {
-    return entry.flavor_text;
+  pokemonData.flavor = flavorEng.map(function(flavorEntry) {
+    return [flavorEntry.version.name, flavorEntry.flavor_text];
   });
+  console.log(pokemonData.flavor);
 }
 
 function renderModal(pokemon) {
+  let eggGroups = pokemon.eggGroup.join(", ");
   $("#infoModalTitle").text(`#${pokemon.id}: ${pokemon.name}`);
+  let modalBodyHeaderTextHtml = `
+      <p>${pokemon.genus}</p>
+      <p>Body shape: ${pokemon.shape}</p>
+      <p>Egg groups: ${eggGroups}</p>
+      <p>Main color: ${pokemon.color}</p>
+    `;
+  $modalBodyHeaderText.append(modalBodyHeaderTextHtml);
+  let modalBodyHeaderImgHtml = `<img src="img/images/${pokemon.id}.png"
+    class="card-img-top pk-portrait" alt="${pokemon.name}">`;
+  $modalBodyHeaderImgCtnr.append(modalBodyHeaderImgHtml);
+  let flavorEntries = pokemon.flavor.map(function(entry) {
+    return `<p><strong>${capitalize(entry[0])} Version</strong>: ${entry[1]}</p>`;
+  });
+  $modalBodyText.append(flavorEntries);
 }
