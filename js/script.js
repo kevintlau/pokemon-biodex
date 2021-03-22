@@ -5,9 +5,7 @@ const EGG_GROUP_URL = "https://pokeapi.co/api/v2/egg-group/";
 const TYPE_URL = "https://pokeapi.co/api/v2/type/";
 const DESC_URL = "https://pokeapi.co/api/v2/pokemon-species/";
 
-// URL to get a small icon - to get icon, add lowercase name.png
-const ICON_URL_PREGALAR = "https://img.pokemondb.net/sprites/bank/normal/";
-const ICON_URL_GALAR = "https://img.pokemondb.net/sprites/sword-shield/normal/";
+const POKEMON_INFO_URL = "https://pokeapi.co/api/v2/pokemon-species/";
 // URL to get a large portrait - to get portrait, add lowercase name.jpg
 const PORTRAIT_URL = "https://img.pokemondb.net/artwork/large/";
 
@@ -85,6 +83,7 @@ let results,
     selectedSearch, 
     searchCriterion, 
     searchValue;
+let pokemonData = {};
 
 // ---------- cached element references ---------------------------------------
 
@@ -141,7 +140,7 @@ $criterionSearchesEl.on("click", "button.dropdown-item", function () {
 $resultsEl.on("click", "article.pokemon", function() {
   let pokemonId = this.dataset.id;
   let pokemonName = this.dataset.name;
-  renderModal(pokemonId, pokemonName);
+  displayModal(pokemonId, pokemonName);
 });
 
 // ---------- functions -------------------------------------------------------
@@ -675,7 +674,7 @@ function render(results) {
   const html = results.map(function (pokemon) {
     let pokemonId = getPokeId(pokemon);
     let pokemonName = pokemon.name;
-    let imageUrl = getIconUrl(pokemonId, pokemonName);
+    // let imageUrl = getIconUrl(pokemonId, pokemonName);
     let uppercaseName = capitalize(pokemonName);
     return `
       <article 
@@ -684,8 +683,8 @@ function render(results) {
         data-name="${uppercaseName}"
       >
         <div class="img-container">
-          <img src="${imageUrl}"
-            class="card-img-top pk-img" alt="${uppercaseName}">
+          <img src="img/sprites/${pokemonId}.png"
+            class="card-img-top pk-icon" alt="${uppercaseName}">
         </div>
         <div class="card-body">
           <h5 class="card-title">#${pokemonId}: ${uppercaseName}</h5>
@@ -699,8 +698,38 @@ function render(results) {
   }
 }
 
-function renderModal(id, name) {
+function displayModal(id, name) {
   $modalEl.modal("toggle");
-  $("#infoModalTitle").text(id);
-  $(".modal-body").text(name);
+  $.ajax(POKEMON_INFO_URL + id).then(
+    function (data) {
+      pokemonData.id = id;
+      pokemonData.name = name;
+      getPokeData(data);
+      renderModal(pokemonData);
+    }
+,
+    function(error) { console.log(error); }
+  )
+}
+
+function getPokeData(pokemon) {
+  pokemonData.color = pokemon.color.name;
+  pokemonData.eggGroup = pokemon.egg_groups.map(function(group) {
+    return group.name;
+  });
+  let genusEng = pokemon.genera.filter(function(genus) {
+    genus.language.name = "en";
+  });
+  pokemonData.genus = genusEng.genus;
+  pokemonData.shape = pokemon.shape.name;
+  let flavorEng = pokemon.flavor_text_entries.filter(function(entry) {
+    entry.language.name = "en";
+  });
+  pokemonData.flavor = flavorEng.map(function(entry) {
+    return entry.flavor_text;
+  });
+}
+
+function renderModal(pokemon) {
+  $("#infoModalTitle").text(`#${pokemon.id}: ${pokemon.name}`);
 }

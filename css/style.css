@@ -81,7 +81,12 @@ article.pokemon {
   height: 100px;
 }
 
-.pk-img {
+.pk-icon {
     max-height: 100%;
     width: auto;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
 }
