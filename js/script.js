@@ -732,11 +732,11 @@ function renderModal(pokemon) {
       <p>Main color: ${pokemon.color}</p>
     `;
   $modalBodyHeaderText.append(modalBodyHeaderTextHtml);
-  let modalBodyHeaderImgHtml = `<img src="img/images/${pokemon.id}.png"
+  let modalBodyHeaderImgHtml = `<img src="img/portraits/${pokemon.id}.png"
     class="card-img-top pk-portrait" alt="${pokemon.name}">`;
   $modalBodyHeaderImgCtnr.append(modalBodyHeaderImgHtml);
   let flavorEntries = pokemon.flavor.map(function(entry) {
-    return `<p><strong>${capitalize(entry[0])} Version</strong>: ${entry[1]}</p>`;
+    return `<p><strong>${capitalize(entry[0])} Version:</strong> ${entry[1]}</p>`;
   });
   $modalBodyText.append(flavorEntries);
 }
