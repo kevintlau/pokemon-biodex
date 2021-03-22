@@ -15,19 +15,19 @@ A web application that searches by and displays information about Pokémon biolo
 
 Desktop functionality:
 
-![Desktop search](https://imgur.com/Ry42iRA)
+![Desktop search](https://imgur.com/Ry42iRA.png)
 
-![Desktop modal](https://imgur.com/AM7Bsys)
+![Desktop modal](https://imgur.com/AM7Bsys.png)
 
 Mobile functionality:
 
-![Mobile search](https://imgur.com/9gFZ475)
+![Mobile search](https://imgur.com/9gFZ475.png)
 
-![Mobile modal](https://imgur.com/rUeJqet)
+![Mobile modal](https://imgur.com/rUeJqet.png)
 
 Wireframe
 
-![Wireframe](https://imgur.com/X75Njfc)
+![Wireframe](https://imgur.com/X75Njfc.png)
 
 ### Getting Started
 
