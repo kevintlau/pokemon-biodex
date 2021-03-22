@@ -83,17 +83,12 @@ let pokemonData = {};
 
 // ---------- cached element references ---------------------------------------
 
-
 const $searchRegionEl = $("#search-region");
 const $selectSearchEl = $("#select-search");
-const $searchShapeEl = $("#search-shape");
-const $searchEggGroupEl = $("#search-egg-group");
-const $searchTypeEl = $("#search-type");
-const $hideableEl = $(".hideable");
 const $criterionSearchesEl = $("#criterion-searches");
 const $resultsEl = $("div#results");
 const $modalEl = $("#infoModal");
-const $modalTitle = $("#infoModalTitle");
+const $modalTitleEl = $("#infoModalTitle");
 const $modalBodyHeaderText = $(".modal-body-header-text");
 const $modalBodyHeaderImgCtnr = $(".modal-body-header-image-container");
 const $modalBodyText = $(".modal-body-text");
@@ -590,6 +585,7 @@ function createTypeSearch() {
   $criterionSearchesEl.append(typeSearchHtml);
 }
 
+// Changes active status for chosen selection criteria
 function activate(element) {
   element.siblings().removeClass("selected");
   element.addClass("selected");
@@ -614,6 +610,7 @@ function displayResults(searchUrl, searchValue, searchCriterion) {
   $.ajax(searchUrl + searchValue).then(
     function (data) {
       switch (searchCriterion) {
+        // if searching by type, returns data in a different format
         case "type":
           const typeSearchResults = data.pokemon;
           jsonPokemon = typeSearchResults.map(function (result) {
@@ -651,18 +648,11 @@ function capitalize(lowercaseName) {
   return lowercaseName[0].toUpperCase() + lowercaseName.slice(1);
 }
 
+// to limit display data on page - only display selected region Pokemon
 function inRegion(id, region) {
   let min = REGION_SPECIES_LIMITS[region][0];
   let max = REGION_SPECIES_LIMITS[region][1];
   return min <= id && id <= max;
-}
-
-function getIconUrl(id, name) {
-  if (inRegion(id, "galar")) {
-    return `${ICON_URL_GALAR}${name}.png`;
-  } else {
-    return `${ICON_URL_PREGALAR}${name}.png`;
-  }
 }
 
 function render(results) {
@@ -670,7 +660,6 @@ function render(results) {
   const html = results.map(function (pokemon) {
     let pokemonId = getPokeId(pokemon);
     let pokemonName = pokemon.name;
-    // let imageUrl = getIconUrl(pokemonId, pokemonName);
     let uppercaseName = capitalize(pokemonName);
     return `
       <article 
@@ -710,6 +699,7 @@ function displayModal(id, name) {
   )
 }
 
+// parse out relevant data (in english) and store in object to display in modal
 function getPokeData(pokemon) {
   let nameEng = pokemon.names.find(function(nameEntry) {
     return nameEntry.language.name === "en";
@@ -730,12 +720,11 @@ function getPokeData(pokemon) {
   pokemonData.flavor = flavorEng.map(function(flavorEntry) {
     return [flavorEntry.version.name, flavorEntry.flavor_text];
   });
-  console.log(pokemonData.flavor);
 }
 
 function renderModal(pokemon) {
   let eggGroups = pokemon.eggGroup.join(", ");
-  $("#infoModalTitle").text(`#${pokemon.id}: ${pokemon.name}`);
+  $modalTitleEl.text(`#${pokemon.id}: ${pokemon.name}`);
   let modalBodyHeaderTextHtml = `
       <p>${pokemon.genus}</p>
       <p>Body shape: ${pokemon.shape}</p>
