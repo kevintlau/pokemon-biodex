@@ -1,9 +1,10 @@
 // ---------- constant variables ----------------------------------------------
 
+// search API URLs
 const SHAPE_URL = "https://pokeapi.co/api/v2/pokemon-shape/";
 const EGG_GROUP_URL = "https://pokeapi.co/api/v2/egg-group/";
 const TYPE_URL = "https://pokeapi.co/api/v2/type/";
-const POKEMON_INFO_URL = "https://pokeapi.co/api/v2/pokemon-species/";
+const INFO_URL = "https://pokeapi.co/api/v2/pokemon-species/";
 
 const REGION_SPECIES_LIMITS = {
   kanto: [1, 151],
@@ -74,53 +75,78 @@ const TYPES = {
 
 // ---------- state variables -------------------------------------------------
 
-let results, 
-    selectedRegion, 
-    selectedSearch, 
-    searchCriterion, 
-    searchValue;
+// state variables for search functionality
+/*
+  selectedSearch and searchCriterion will be the same in most cases, but will
+    be different if user searches first, then chooses another category, and
+    then reselects the region. searchCriterion is always tied to searchValue
+    so the search requests will always be valid.
+*/
+let selectedRegion, selectedSearch, searchCriterion, searchValue;
+
+// state variable for results of search
+let results = [];
+
+// state variable for Pokemon data to be displayed in modal
 let pokemonData = {};
 
 // ---------- cached element references ---------------------------------------
 
+// elements used in search functionality
 const $searchRegionEl = $("#search-region");
 const $selectSearchEl = $("#select-search");
 const $criterionSearchesEl = $("#criterion-searches");
+const $searchShapeEl = $("#search-shape");
+const $searchEggGroupEl = $("#search-egg-group");
+const $searchTypeEl = $("#search-type");
+const $selectableEl = $(".selectable");
+const $hideableEl = $(".hideable");
+
+// element used in results display
 const $resultsEl = $("div#results");
-const $modalEl = $("#infoModal");
-const $modalTitleEl = $("#infoModalTitle");
-const $modalBodyHeaderText = $(".modal-body-header-text");
-const $modalBodyHeaderImgCtnr = $(".modal-body-header-image-container");
-const $modalBodyText = $(".modal-body-text");
+
+// elements used in modal display
+const $modalEl = $("#pokemon-info-modal");
+const $modalTitleEl = $("#modal-title");
+const $modalBodyHeaderTextEl = $("#modal-body-header-text");
+const $modalBodyHeaderImgCtnrEl = $("#modal-body-header-image-container");
+const $modalBodyTextEl = $("#modal-body-text");
 
 // ---------- event listeners -------------------------------------------------
 
+// the user's first step: to select a region to narrow search results
 $searchRegionEl.on("click", ".dropdown-item", function () {
   activate($(this));
   selectedRegion = this.dataset.region;
+  // allows user to select the search category next
   $selectSearchEl.children().eq(0).removeAttr("disabled");
+  // if the user has already searched, then search again using existing choices
   if (selectedSearch) {
     handleSearch();
   }
 });
 
+// the user's second step: to select a search category
 $selectSearchEl.on("click", ".dropdown-item", function () {
   activate($(this));
+  $selectableEl.removeClass("selected");
   selectedSearch = this.dataset.search;
-  $criterionSearchesEl.empty();
+  // once a category (criterion) is chosen, then unhide only the next dropdown
+  $hideableEl.hide();
   switch (selectedSearch) {
     case "shape":
-      createShapeSearch();
+      $searchShapeEl.show();
       break;
     case "egggroup":
-      createEggGroupSearch();
+      $searchEggGroupEl.show();
       break;
     case "type":
-      createTypeSearch();
+      $searchTypeEl.show();
       break;
   }
 });
 
+// the user's third step: to choose a value to search for
 $criterionSearchesEl.on("click", "button.dropdown-item", function () {
   activate($(this));
   searchCriterion = this.dataset.criterion;
@@ -128,10 +154,10 @@ $criterionSearchesEl.on("click", "button.dropdown-item", function () {
   handleSearch();
 });
 
-$resultsEl.on("click", "article.pokemon", function() {
+// when the user clicks on a result card
+$resultsEl.on("click", "article.pokemon", function () {
   let pokemonId = this.dataset.id;
-  let pokemonName = this.dataset.name;
-  displayModal(pokemonId, pokemonName);
+  handleDisplayModal(pokemonId);
 });
 
 // ---------- functions -------------------------------------------------------
@@ -140,488 +166,38 @@ init();
 
 function init() {
   $resultsEl.empty();
-  $criterionSearchesEl.empty();
 }
 
-// Create Bootstrap dropdown for body shape search
-function createShapeSearch() {
-  $criterionSearchesEl.empty();
-  const shapeSearchHtml = `
-    <div class="dropdown" id="search-shape">
-      <button
-        class="btn btn-secondary dropdown-toggle"
-        type="button"
-        id="dropdownMenu2"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        Select a shape
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="wings"
-        >
-          Alar (characterized by two wings)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="blob"
-        >
-          Alvine (indescribable)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="humanoid"
-        >
-          Anthropomorphic (human-like)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="arms"
-        >
-          Brachial (characterized by arms)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="squiggle"
-        >
-          Caudal (squiggly / snakelike)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="armor"
-        >
-          Chitinous (plated / armored)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="tentacles"
-        >
-          Cilial (characterized by tentacles)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="legs"
-        >
-          Crural (characterized by legs)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="fish"
-        >
-          Ichthyic (fishlike / finned)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="bug-wings"
-        >
-          Lepidopterous (multi-winged)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="quadruped"
-        >
-          Mensal (quadrupedal)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="heads"
-        >
-          Polycephalic (multi-headed)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="ball"
-        >
-          Pomaceous (spherical / orblike)
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="shape"
-          data-value="upright"
-        >
-          Sciurine (bipedal)
-        </button>
-      </div>
-    </div>
-    `;
-  $criterionSearchesEl.append(shapeSearchHtml);
-}
-
-// Create Bootstrap dropdown for egg group search
-function createEggGroupSearch() {
-  $criterionSearchesEl.empty();
-  const eggGroupSearchHtml = `
-    <div class="dropdown" id="search-egg-group">
-      <button
-        class="btn btn-secondary dropdown-toggle"
-        type="button"
-        id="dropdownMenu2"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        Select an egg group
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="bug"
-        >
-          Bug
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="dragon"
-        >
-          Dragon
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="fairy"
-        >
-          Fairy
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="flying"
-        >
-          Flying
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="ground"
-        >
-          Ground
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="humanshape"
-        >
-          Humanshape
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="indeterminate"
-        >
-          Indeterminate
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="mineral"
-        >
-          Mineral
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="monster"
-        >
-          Monster
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="plant"
-        >
-          Plant
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="water1"
-        >
-          Water, type 1
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="water2"
-        >
-          Water, type 2
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="water3"
-        >
-          Water, type 3
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="ditto"
-        >
-          Ditto
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="egggroup"
-          data-value="no-eggs"
-        >
-          Cannot breed
-        </button>
-      </div>
-    </div>
-    `;
-  $criterionSearchesEl.append(eggGroupSearchHtml);
-}
-
-// Create Bootstrap dropdown for type search
-function createTypeSearch() {
-  $criterionSearchesEl.empty();
-  const typeSearchHtml = `
-    <div class="dropdown hideable" id="search-type">
-      <button
-        class="btn btn-secondary dropdown-toggle"
-        type="button"
-        id="dropdownMenu2"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        Select a type
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="bug"
-        >
-          Bug
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="dark"
-        >
-          Dark
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="dragon"
-        >
-          Dragon
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="electric"
-        >
-          Electric
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="fairy"
-        >
-          Fairy
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="fighting"
-        >
-          Fighting
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="fire"
-        >
-          Fire
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="flying"
-        >
-          Flying
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="ghost"
-        >
-          Ghost
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="grass"
-        >
-          Grass
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="ground"
-        >
-          Ground
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="ice"
-        >
-          Ice
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="normal"
-        >
-          Normal
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="poison"
-        >
-          Poison
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="psychic"
-        >
-          Psychic
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="rock"
-        >
-          Rock
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="steel"
-        >
-          Steel
-        </button>
-        <button
-          class="dropdown-item"
-          type="button"
-          data-criterion="type"
-          data-value="water"
-        >
-          Water
-        </button>
-      </div>
-    </div>
-    `;
-  $criterionSearchesEl.append(typeSearchHtml);
-}
-
-// Changes active status for chosen selection criteria
+// changes "active" status when a choice is selected
 function activate(element) {
+  // changes the color of the chosen option within the dropdown bar
   element.siblings().removeClass("selected");
   element.addClass("selected");
+  // changes the color of the dropdown bar button
   let parentButton = element.parent().siblings().eq(0);
   parentButton.text(element.text());
   parentButton.addClass("selected");
 }
 
+// search function - called when a search value is chosen
 function handleSearch() {
-  if (searchCriterion === "shape") {
-    displayResults(SHAPE_URL, searchValue, searchCriterion);
-  } else if (searchCriterion === "egggroup") {
-    displayResults(EGG_GROUP_URL, searchValue, searchCriterion);
-  } else if (searchCriterion === "type") {
-    displayResults(TYPE_URL, searchValue, searchCriterion);
-  } else {
-    console.log("Search criterion could not be read.");
-  }
-}
-
-function displayResults(searchUrl, searchValue, searchCriterion) {
-  $.ajax(searchUrl + searchValue).then(
+  let searchUrl = generateSearchUrl();
+  $.ajax(searchUrl).then(
     function (data) {
       switch (searchCriterion) {
-        // if searching by type, returns data in a different format
+        // searching by type returns data in a different format
         case "type":
           const typeSearchResults = data.pokemon;
           jsonPokemon = typeSearchResults.map(function (result) {
             return result.pokemon;
           });
           break;
+        // otherwise, just get the data as normal
         case "shape":
         case "egggroup":
           jsonPokemon = data.pokemon_species;
-          break;
       }
+      // then narrow results by region and display 
       results = refineResults(jsonPokemon);
       render(results);
     },
@@ -631,6 +207,19 @@ function displayResults(searchUrl, searchValue, searchCriterion) {
   );
 }
 
+// generates an API URL for the search based on the category
+function generateSearchUrl() {
+  switch (searchCriterion) {
+    case "shape":
+      return SHAPE_URL + searchValue;
+    case "egggroup":
+      return EGG_GROUP_URL + searchValue;
+    case "type":
+      return TYPE_URL + searchValue;
+  }
+}
+
+// narrows the results based on selected region to limit data displayed on page
 function refineResults(results) {
   let refinedResults = results.filter(function (pokemon) {
     let pokemonId = getPokeId(pokemon);
@@ -639,24 +228,29 @@ function refineResults(results) {
   return refinedResults;
 }
 
+// grabs Pokemon id number from the Pokemon object in results
 function getPokeId(pokemon) {
   let splitUrl = pokemon.url.split("/");
   return parseInt(splitUrl.slice(-2, -1));
 }
 
-function capitalize(lowercaseName) {
-  return lowercaseName[0].toUpperCase() + lowercaseName.slice(1);
-}
-
-// to limit display data on page - only display selected region Pokemon
+// checks if a Pokemon's number lies within a region's number limits
 function inRegion(id, region) {
   let min = REGION_SPECIES_LIMITS[region][0];
   let max = REGION_SPECIES_LIMITS[region][1];
   return min <= id && id <= max;
 }
 
+function capitalize(lowercaseName) {
+  return lowercaseName[0].toUpperCase() + lowercaseName.slice(1);
+}
+
+// displays results onto page
 function render(results) {
+  // clear the page first
   $resultsEl.empty();
+
+  // generate html for a card for each result
   const html = results.map(function (pokemon) {
     let pokemonId = getPokeId(pokemon);
     let pokemonName = pokemon.name;
@@ -665,7 +259,6 @@ function render(results) {
       <article 
         class="pokemon card text-center" 
         data-id="${pokemonId}"
-        data-name="${uppercaseName}"
       >
         <div class="img-container">
           <img src="img/sprites/${pokemonId}.png"
@@ -678,65 +271,114 @@ function render(results) {
       `;
   });
   $resultsEl.append(html);
+
+  // if no results, then display an error message
   if (!html.length) {
-    $resultsEl.append("<p class='no-results'>No results found.</p>");
+    let searchCriterionErr = searchCriterion;
+    if (searchCriterion === "egggroup") searchCriterionErr = "egg group";
+    $resultsEl.append(`
+      <p>
+        No Pok&eacute;mon of the
+          <span class="bold">
+            ${capitalize(searchValue)} ${searchCriterionErr}
+          </span>
+        found in the 
+        <span class="bold">
+            ${capitalize(selectedRegion)}
+        </span>
+        region.
+      </p>`
+    );
   }
 }
 
-function displayModal(id, name) {
-  $modalBodyHeaderText.empty();
-  $modalBodyHeaderImgCtnr.empty();
-  $modalBodyText.empty();
+// display modal function - called when a card is clicked
+function handleDisplayModal(id) {
+  // clear modal of text and images
+  $modalBodyHeaderTextEl.empty();
+  $modalBodyHeaderImgCtnrEl.empty();
+  $modalBodyTextEl.empty();
+  // open the modal
   $modalEl.modal("toggle");
-  $.ajax(POKEMON_INFO_URL + id).then(
+  $.ajax(INFO_URL + id).then(
     function (data) {
-      pokemonData.id = id;
-      getPokeData(data);
+      loadPokeData(data);
       renderModal(pokemonData);
+    },
+    function (error) {
+      console.log(error);
     }
-,
-    function(error) { console.log(error); }
-  )
+  );
 }
 
-// parse out relevant data (in english) and store in object to display in modal
-function getPokeData(pokemon) {
-  let nameEng = pokemon.names.find(function(nameEntry) {
+// parses relevant data (in English) and store in object to display in modal
+function loadPokeData(pokemon) {
+  // load id
+  pokemonData.id = pokemon.pokedex_numbers[0].entry_number;
+
+  // load name
+  let nameEng = pokemon.names.find(function (nameEntry) {
     return nameEntry.language.name === "en";
   });
   pokemonData.name = nameEng.name;
+
+  // load color
   pokemonData.color = pokemon.color.name;
-  pokemonData.eggGroup = pokemon.egg_groups.map(function(groupEntry) {
+
+  // load egg group
+  pokemonData.eggGroup = pokemon.egg_groups.map(function (groupEntry) {
     return groupEntry.name;
   });
-  let genusEng = pokemon.genera.find(function(genusEntry) {
+
+  // load genus
+  let genusEng = pokemon.genera.find(function (genusEntry) {
     return genusEntry.language.name === "en";
   });
   pokemonData.genus = genusEng.genus;
+
+  // load shape
   pokemonData.shape = pokemon.shape.name;
-  let flavorEng = pokemon.flavor_text_entries.filter(function(flavorEntry) {
+
+  // load all Pokemon flavor text descriptions from all games
+  let flavorEng = pokemon.flavor_text_entries.filter(function (flavorEntry) {
     return flavorEntry.language.name === "en";
   });
-  pokemonData.flavor = flavorEng.map(function(flavorEntry) {
+
+  pokemonData.flavor = flavorEng.map(function (flavorEntry) {
     return [flavorEntry.version.name, flavorEntry.flavor_text];
   });
 }
 
+// displays Pokemon info in modal
 function renderModal(pokemon) {
+  // Pokemon can have multiple egg groups, so put them in a string
   let eggGroups = pokemon.eggGroup.join(", ");
+  if (!eggGroups) eggGroups = "none";
+
   $modalTitleEl.text(`#${pokemon.id}: ${pokemon.name}`);
+
   let modalBodyHeaderTextHtml = `
-      <p>${pokemon.genus}</p>
-      <p>Body shape: ${pokemon.shape}</p>
-      <p>Egg groups: ${eggGroups}</p>
-      <p>Main color: ${pokemon.color}</p>
+      <h5>${pokemon.genus}</h5>
+      <p><span class="bold">Body shape:</span> ${pokemon.shape}</p>
+      <p><span class="bold">Egg groups:</span> ${eggGroups}</p>
+      <p><span class="bold">Main color:</span> ${pokemon.color}</p>
     `;
-  $modalBodyHeaderText.append(modalBodyHeaderTextHtml);
+  $modalBodyHeaderTextEl.append(modalBodyHeaderTextHtml);
+
   let modalBodyHeaderImgHtml = `<img src="img/portraits/${pokemon.id}.png"
     class="card-img-top pk-portrait" alt="${pokemon.name}">`;
-  $modalBodyHeaderImgCtnr.append(modalBodyHeaderImgHtml);
-  let flavorEntries = pokemon.flavor.map(function(entry) {
-    return `<p><strong>${capitalize(entry[0])} Version:</strong> ${entry[1]}</p>`;
+  $modalBodyHeaderImgCtnrEl.append(modalBodyHeaderImgHtml);
+
+  $modalBodyTextEl.append(
+    "<h5 class='underline'>Pok&eacute;mon description by game version:</h5>"
+  );
+  let flavorEntries = pokemon.flavor.map(function (entry) {
+    return `<p>
+              <span class="bold">
+                ${capitalize(entry[0])} Version:
+              </span>
+              ${entry[1]}
+            </p>`;
   });
-  $modalBodyText.append(flavorEntries);
+  $modalBodyTextEl.append(flavorEntries);
 }
